@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 
 export default function GetEmailFromToken() {
-	const endpoint = `http://127.0.0.1:8000/account/token`;
+	const endpoint = `http://localhost:8000/account/token`;
 	const [data, setData] = useState([]);
 
 	const fetchInfo = () => {
@@ -18,5 +18,5 @@ export default function GetEmailFromToken() {
 		fetchInfo();
 	}, []);
 
-	return data['sub']
+	return data['sub'];
 }

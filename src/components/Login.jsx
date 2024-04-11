@@ -5,7 +5,7 @@ import { loginFields } from "../constants/formFields";
 import FormAction from "./FormAction";
 import FormExtra from "./FormExtra";
 import Input from "./Input";
-import { ReactComponent as GoogleSI } from '../assets/googleSI.svg';
+import GoogleLoginButton from './GoogleLoginButton';
 
 
 const fields = loginFields;
@@ -26,50 +26,23 @@ export default function Login() {
 		await authenticateUser();
 	}
 
-	const handleGoogleSubmit = async (e) => {
-		e.preventDefault();
-		await authenticateGoogleUser();
-	}
-
-	const authenticateGoogleUser = async () => {
-		const endpoint = `http://127.0.0.1:8000/account/auth/google`;
-		let ok;
-		await fetch(endpoint,
-			{
-				method: 'GET',
-				credentials: "include",
-			}).then(response => {
-				if (response.ok) {
-					ok = true;
-					return response.json();
-				}
-			})
-			.then(data => {
-				if (ok)
-					navigation('/', { state: { 'token': data['access_token'] }, replace: true });
-			})
-			.catch(error => console.log(error))
-	}
 	//Handle Login API Integration here
 	const authenticateUser = async () => {
-		const endpoint = `http://127.0.0.1:8000/account/token/test`;
+		const endpoint = `http://localhost:8000/account/token`;
 		const formData = new FormData(formRef.current);
-		let ok;
 		await fetch(endpoint,
 			{
 				method: 'POST',
 				credentials: "include",
 				body: formData
-			}).then(response => {
-				if (response.ok) {
-					ok = true;
-					return response.json();
-				}
 			})
-			.then(data => {
-				if (ok)
-					navigation('/', { state: { 'token': data['access_token'] }, replace: true });
+			.then(response => {
+				if (response.ok)
+					navigation('/');
+				else if (response.status == 401)
+					return response.json()
 			})
+			.then(data => { if (data) alert(data['detail']) })
 			.catch(error => console.log(error))
 	}
 
@@ -99,9 +72,7 @@ export default function Login() {
 				<FormExtra />
 				<FormAction handleSubmit={handleSubmit} text="Login" />
 			</form>
-			<a href="http://127.0.0.1:8000/account/login/google">
-				<GoogleSI />
-			</a>
+			<GoogleLoginButton />
 		</div>
 	)
 }
